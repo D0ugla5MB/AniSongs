@@ -1,17 +1,15 @@
 import https from 'https';
 import * as cheerio from 'cheerio';
 import fs from 'fs';
+import { getQueryLimitNum } from './sorted_data.mjs';
 
-function incQueryLimitRange(currentLimit) {
-    return () => currentLimit += 50;
-}
 
 export function getHtmlContent() {
-    let queryLimitRange = incQueryLimitRange(-50);
     const URL_BASE = "https://myanimelist.net/topanime.php?limit=";
-    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     const MAX_PAGES = 1;
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     let totalFetchedPages = 0;
+    let queryLimitRange = () => 50 * totalFetchedPages; //the table only show 50 results even if the limit value is not a fifty mult.
 
     const fetchPage = (url, retries = 3) => {
         return new Promise((resolve, reject) => {
@@ -75,18 +73,32 @@ export function getHtmlContent() {
         console.log(`Stored ${urlsList.length} links to file.`);
     };
 
+    const saveUrlsNumParts = (urlsList) => {
+        let arrNums = '';
+
+        for (let url of urlsList) {
+            const nums = url.match(/\/(\d+)\//);
+            if (nums) {
+                arrNums += nums[1] + '~';
+            }
+        }
+        arrNums = arrNums.slice(0, -1);
+
+        fs.appendFileSync('numeric_parts.txt', arrNums);
+    };
     const loadPages = async () => {
         while (totalFetchedPages < MAX_PAGES) {
             let MAL_URL_BASE = `${URL_BASE}${queryLimitRange()}`;
             console.log(`Fetching page: ${MAL_URL_BASE}`);
-            totalFetchedPages += 1;
+            totalFetchedPages++;
 
             const html = await fetchPage(MAL_URL_BASE);
             if (!html) { break; }
 
             const linksList = scrapAnchorHref(html);
+            linksList.sort((f, s) => getQueryLimitNum(f) - getQueryLimitNum(s));
             saveUrls(linksList);
-
+            saveUrlsNumParts(linksList);
             await delay(1000);
         }
     };
