@@ -21,7 +21,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const queryLimitRange = () => 50 * pageTracker.getCurrentPage();
 
 
-function fetchPage(url, retries = 3) {
+export function fetchPage(url, retries = 3) {
     return new Promise((resolve, reject) => {
         let bodyContent = '';
         https.get(url, async (response) => {
