@@ -1,5 +1,6 @@
 import http from 'http';
 import { getHtmlContent } from './db_data.mjs';
+import { getThemeSongsData } from './music_data.mjs';
 
 const PORT = 3000;
 
@@ -15,4 +16,4 @@ const server = http.createServer((req, res) => {
     res.end();
 }).listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
-}).close(getHtmlContent);
+}).close(getThemeSongsData);
