@@ -2,9 +2,8 @@ import https from 'https';
 import * as cheerio from 'cheerio';
 import fs from 'fs';
 import { getQueryLimitNum } from './sorted_data.mjs';
+import { getUrlBase, getMaxPages } from './VARS.mjs';
 
-const URL_BASE = "https://myanimelist.net/topanime.php?limit=";
-const MAX_PAGES = 1;
 
 function createPageTracker() {
     let totalFetchedPages = 0;
@@ -98,8 +97,8 @@ function saveUrlsNumParts(urlsList) {
 }
 
 async function loadPages() {
-    while (pageTracker.getCurrentPage() < MAX_PAGES) {
-        let MAL_URL_BASE = `${URL_BASE}${queryLimitRange()}`;
+    while (pageTracker.getCurrentPage() < getMaxPages()) {
+        let MAL_URL_BASE = `${getUrlBase()}${queryLimitRange()}`;
         console.log(`Fetching page: ${MAL_URL_BASE}`);
 
         pageTracker.incrementPage();
