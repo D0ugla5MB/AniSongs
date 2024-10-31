@@ -1,13 +1,13 @@
 import https from 'https';
 import * as cheerio from 'cheerio';
 import fs from 'fs';
-import { getQueryLimitNum } from './sorted_data.mjs';
+import { getQueryLimitNum } from './utils_page.mjs';
 import { getUrlBase, getMaxPages } from './VARS.mjs';
 
 
 function createPageTracker() {
     let totalFetchedPages = 0;
-    
+
     return {
         getCurrentPage: () => totalFetchedPages,
         incrementPage: () => { totalFetchedPages += 1; },
@@ -19,6 +19,39 @@ const pageTracker = createPageTracker();
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const queryLimitRange = () => 50 * pageTracker.getCurrentPage();
 
+export function getQueryLimitNum(num) {
+    const subStr = num.match(/\d+/);
+    return subStr ? parseInt(subStr[0], 10) : 0;
+}
+
+export function getUrlsList(urlsListFile) {
+    try {
+        const data = fs.readFileSync(urlsListFile, 'utf8');
+
+        return data
+            .split('\n')
+            .map(url => url.trim())
+            .map(url => {
+                const urlAux = new URL(url);
+                const limitQuery = urlAux.searchParams.get('limit') || null;
+                const typeQuery = urlAux.searchParams.get('type') || null;
+                const otherQueries = Array.from(urlAux.searchParams.entries())
+                    .filter(([key]) => key !== 'limit' && key !== 'type')
+                    .map(([key, value]) => `${key}=${value}`);
+
+                return {
+                    fullUrl: url,
+                    baseUrl: urlAux.origin + urlAux.pathname,
+                    limitQuery: limitQuery,
+                    typeQuery: typeQuery,
+                    otherQueries
+                };
+            });
+    } catch (error) {
+        console.error('Error reading file:', error);
+        throw error;
+    }
+}
 
 export function fetchPage(url, retries = 3) {
     return new Promise((resolve, reject) => {
@@ -116,4 +149,5 @@ async function loadPages() {
 
 export function getHtmlContent() {
     loadPages().catch(err => console.error(err));
+
 }

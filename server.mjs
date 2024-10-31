@@ -1,6 +1,4 @@
 import http from 'http';
-import { getHtmlContent } from './db_data.mjs';
-import { getThemeSongsData } from './music_data.mjs';
 import { getServerPort } from './VARS.mjs';
 
 
@@ -16,4 +14,4 @@ const server = http.createServer((req, res) => {
     res.end();
 }).listen(getServerPort(), () => {
     console.log(`Server is running at http://localhost:${PORT}`);
-}).close(getThemeSongsData);
+}).close();

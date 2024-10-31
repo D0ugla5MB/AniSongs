@@ -1,3 +1,10 @@
+import { getUrlsList } from "./utils_page.mjs";
+
+//temp var: will be recplaced by env vars
+const FILES_PATH = {
+    animes_url: '/anime_links.txt',
+    url_query_limit: '/numeric_parts.txt'
+};
 const URL_BASE = "https://myanimelist.net/topanime.php?limit=";
 const PORT = 3000;
 const MAX_PAGES = 1;
@@ -20,6 +27,10 @@ const SELECTORS = {
     }
 };
 
+const LAST_FETCHED_PAGE = '';
+const URLS_LIST = getUrlsList(FILES_PATH.animes_url);
+
+
 export function getUrlBase() { return URL_BASE; }
 export function getServerPort() { return PORT; }
 export function getMaxPages() { return MAX_PAGES; }
@@ -33,3 +44,4 @@ export function getAllSelectors() {
         details: getSongDetailsSelector()
     }
 }
+export function getFilesPath(){return FILES_PATH;}

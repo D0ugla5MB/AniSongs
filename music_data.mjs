@@ -1,4 +1,4 @@
-import { fetchPage } from "./db_data.mjs";
+import { fetchPage } from "./utils_page.mjs";
 import fs from 'fs';
 import path from 'path';
 import * as cheerio from 'cheerio';
