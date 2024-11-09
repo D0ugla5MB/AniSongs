@@ -1,2 +1,8 @@
-/node_modules/
-*.txt
+# Ignore Python bytecode and cache
+**/__pycache__/
+*.py[cod]
+
+# Django-specific ignores
+db.sqlite3
+*.log
+.env
