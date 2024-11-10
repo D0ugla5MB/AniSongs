@@ -1,19 +1,57 @@
 import csv
+import os
+import warnings
 from django.core.management.base import BaseCommand, CommandError
 from search_engine.models import Song, Anime, Artist
+
+def check_warning_RightData():
+        file = 'right_data.csv'
+
+        if not os.path.exists(file):
+            warnings.warn(
+                f"Required file '{file}' is missing. Please create or add this file before running the script.",
+                UserWarning
+            )
+        else:
+            if os.path.getsize(file) == 0:
+                warnings.warn(
+                    f"File '{file}' exists but is empty. Please ensure it has data.",
+                    UserWarning
+                )
+            else:
+                try:
+                    with open(file, newline='', encoding='utf-8') as csvfile:
+                        reader = csv.reader(csvfile)
+                        headers = next(reader, None)
+                        
+                        if headers is None:
+                            warnings.warn(
+                                f"File '{file}' exists but appears not to be in valid CSV format. Please check the file content.",
+                                UserWarning
+                            )
+                        else:
+                            print(f"File '{file}' is present, not empty, and in CSV format.")
+                except Exception as e:
+                    warnings.warn(
+                        f"File '{file}' could not be read as a CSV file. Error: {str(e)}",
+                        UserWarning
+                    )
+
 
 class Command(BaseCommand):
     help = 'Save data on song\'s database from a CSV file'
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'fetchbd', 
+            'file_name', 
             type=str, 
             help='The file path to the CSV file with song data.'
         )
 
     def handle(self, *args, **options):
-        file_path = options['fetchbd']
+        check_warning_RightData()
+        
+        file_path = options['file_name']
 
         try:
             with open(file_path, newline='', encoding='utf-8') as csvfile:
