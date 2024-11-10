@@ -26,16 +26,15 @@
                         <strong>Artist:</strong> {{ song.artist.name }}
                     </div>
                     <br>
-                    <div class="feedback-form">
-                            <form method="POST" action="{% url 'search_engine:songData_feedback' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="song_id" value="{{ song.id }}">
-                                <textarea name="suggestion" class="feedback-input" placeholder="Enter a suggestion or correction..."></textarea>
-                                <button type="submit" class="feedback-button">Submit Feedback</button>
-                            </form>
-                    </div>
-                    
                 {% endfor %}
+                <div class="feedback-form">
+                    <form method="POST" action="{% url 'search_engine:songData_feedback' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="song_id" value="{{ song.id }}">
+                        <textarea name="suggestion" class="feedback-input" placeholder="Enter a suggestion or correction..."></textarea>
+                        <button type="submit" class="feedback-button">Submit Feedback</button>
+                    </form>
+                </div>
             </div>
         {% else %}
             {% if query %}
