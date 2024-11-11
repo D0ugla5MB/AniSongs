@@ -1,12 +1,15 @@
 import csv
 import os
+from pathlib import Path
 import warnings
 from django.core.management.base import BaseCommand, CommandError
 from search_engine.models import Song, Anime, Artist
 
-def check_warning_RightData():
-        file = 'right_data.csv'
+current_dir = Path(__file__).parent
 
+file = current_dir /'test.csv'
+
+def check_warning_RightData():
         if not os.path.exists(file):
             warnings.warn(
                 f"Required file '{file}' is missing. Please create or add this file before running the script.",
@@ -63,9 +66,10 @@ class Command(BaseCommand):
                     song_type = row.get('song_type')
                     song_name_roman = row.get('song_name_roman')
                     song_name_jp = row.get('song_name_jp', '')
+                    
+                    anime, anime_created = Anime.objects.get_or_create(default_title=anime_title)
+                    artist, artist_created = Artist.objects.get_or_create(name=artist_name)
 
-                    anime = Anime.objects.get(default_title=anime_title)
-                    artist = Artist.objects.get(name=artist_name)
 
                     song, created = Song.objects.update_or_create(
                         anime=anime,
