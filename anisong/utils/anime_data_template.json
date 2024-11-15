@@ -1,0 +1,16 @@
+{
+  "type_track_list": "<opening|ending|insert>",
+  "anime_id": "<integer>",
+  "anime_info": {
+    "name": "<string>",
+    "myanimelist_url": "<URL>",
+    "track_list": [
+      {
+        "track_name": "<string>",
+        "artist_name": "<string>",
+        "track_id": "<integer or string>",
+        "artist_id": "<integer or string>"
+      }
+    ]
+  }
+}

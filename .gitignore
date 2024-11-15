@@ -5,6 +5,9 @@
 # Django-specific ignores
 db.sqlite3
 *.log
+
+# Other
 .env
 *.csv
 animes_scrape/*
+.cache
