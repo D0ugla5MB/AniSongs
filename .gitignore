@@ -11,3 +11,5 @@ db.sqlite3
 *.csv
 animes_scrape/*
 .cache
+*.json
+!anime_data_template.json
