@@ -28,9 +28,9 @@ class Command(BaseCommand):
                     url = item["url"]
                     match = re.search(r'/anime/(\d+)/', url)
                     if match:
-                        item["extracted_numbers"] = [match.group(1)]
+                        item["extracted_numbers"] = match.group(1)
                     else:
-                        item["extracted_numbers"] = []
+                        item["extracted_numbers"] = ''
                 return item
 
             if isinstance(data, list):
