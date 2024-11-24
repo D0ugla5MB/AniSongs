@@ -1,9 +1,11 @@
 import scrapy
 import json
 
+from anisong.utils.files_config import get_anime_song_list
+
 class AnimeOpEdSpider(scrapy.Spider):
     name = "anime_op_ed"
-    input_file = "..\search_engine\output_copy.json"
+    input_file = get_anime_song_list()
 
     def start_requests(self):
         try:

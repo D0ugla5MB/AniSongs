@@ -3,12 +3,10 @@ import os
 from pathlib import Path
 import warnings
 from django.core.management.base import BaseCommand, CommandError
+from anisong.utils.files_config import get_anime_url_list
 from search_engine.models import Song, Anime, Artist
 
-current_dir = Path(__file__).parent
-
-file = current_dir /'test.csv'
-
+file = get_anime_url_list()
 def check_warning_RightData():
         if not os.path.exists(file):
             warnings.warn(

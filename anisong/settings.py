@@ -19,6 +19,13 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+AUXILIAR_FILES_DIR = BASE_DIR / 'aux_files'
+JSON_FILES_DIR = AUXILIAR_FILES_DIR / 'json'
+
+AUXILIAR_FILES_DIR.mkdir(exist_ok=True)
+JSON_FILES_DIR.mkdir(exist_ok=True)
+
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/

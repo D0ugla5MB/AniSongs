@@ -1,9 +1,8 @@
 import json
 import os
 from django.core.management.base import BaseCommand
-from dotenv import load_dotenv
+from anisong.utils.files_config import get_template_json, get_utils_dir
 
-load_dotenv()
 
 class Command(BaseCommand):
     help = 'Generate JSON files for anime track lists based on template'
@@ -13,7 +12,7 @@ class Command(BaseCommand):
             '--output-dir',
             type=str,
             help='Directory where the generated JSON files will be saved',
-            default='anisong/utils/',  
+            default=get_utils_dir(),  
         )
         parser.add_argument(
             '--data-file',
@@ -25,7 +24,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         output_dir = kwargs['output_dir']
         data_file = kwargs['data_file']
-        template_file = os.getenv('TEMPLATE_FILE_PATH')  
+        template_file = get_template_json()  
         data_sets = None
         
         if data_file:

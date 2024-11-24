@@ -1,12 +1,8 @@
 from collections import deque
 import os
-from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from django.core.management.base import BaseCommand, CommandError
-    
-    
-load_dotenv()
 
 class Command(BaseCommand):
     help = "Searches playlists and processes tracks using Spotipy"
