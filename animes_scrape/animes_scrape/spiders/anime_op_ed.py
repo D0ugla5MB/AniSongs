@@ -1,10 +1,10 @@
 import scrapy
 import json
 
-from anisong.utils.files_config import get_anime_song_list
+from anisong.utils.files_config import get_anime_song_list, get_scrapy_anime_spider_id_name
 
 class AnimeOpEdSpider(scrapy.Spider):
-    name = "anime_op_ed"
+    name = get_scrapy_anime_spider_id_name()
     input_file = get_anime_song_list()
 
     def start_requests(self):
@@ -32,7 +32,6 @@ class AnimeOpEdSpider(scrapy.Spider):
             td_elements = section.xpath(".//td[@width='84%']")
             for td in td_elements:
                 text_content = td.xpath("string(.)").get()  
-                raw_html_text = td.xpath(".//text()").getall()  
                 yield {
                     "content_type": "opening" if "opnening" in section.get() else "ending",
                     "text_content": text_content.strip() if text_content else None,

@@ -1,8 +1,8 @@
 from collections import deque
-import os
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from django.core.management.base import BaseCommand, CommandError
+from anisong.utils.files_config import get_spotify_client_id, get_spotify_client_secret
 
 class Command(BaseCommand):
     help = "Searches playlists and processes tracks using Spotipy"
@@ -12,8 +12,8 @@ class Command(BaseCommand):
         
     def handle(self, *args, **options):
         q = options['query']
-        client_id = os.getenv('SPOTIPY_CLIENT_ID')
-        client_secret = os.getenv('SPOTIPY_CLIENT_SECRET')
+        client_id = get_spotify_client_id()
+        client_secret = get_spotify_client_secret()
         
         if not client_id or not client_secret:
             self.stdout.write(self.style.ERROR("SPOTIPY_CLIENT_ID and SPOTIPY_CLIENT_SECRET must be set in the environment."))

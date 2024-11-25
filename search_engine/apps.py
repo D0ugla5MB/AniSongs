@@ -4,3 +4,7 @@ from django.apps import AppConfig
 class SearchEngineConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'search_engine'
+
+    def ready(self):
+        from django.core.management import call_command
+        call_command('config')

@@ -1,14 +1,17 @@
 import re
 import scrapy
 
+from anisong.utils.files_config import get_mal_anime_url_base, get_scrapy_domain_name, get_scrapy_id_name, get_scrapy_malspider_url_selector
+
 class MalspiderSpider(scrapy.Spider):
-    name = "myanimelist"
-    allowed_domains = ["myanimelist.net"]
+    name = get_scrapy_id_name()
+    allowed_domains = [get_scrapy_domain_name()]
+    css_selector = get_scrapy_malspider_url_selector()
     num_limit = 0
-    start_urls = [f"https://myanimelist.net/topanime.php?type=tv&limit={num_limit}"]
+    start_urls = [f"{get_mal_anime_url_base()}{num_limit}"]
 
     def parse(self, response):
-        links = response.css("table div > h3 > a")
+        links = response.css(self.css_selector)
         if not links:
             self.log("Stopping crawl: No 'div > h3 > a' tags found.")
             return
@@ -29,7 +32,7 @@ class MalspiderSpider(scrapy.Spider):
             return
 
         self.num_limit += 50
-        next_page = f"https://myanimelist.net/topanime.php?type=tv&limit={self.num_limit}"
+        next_page = f"{get_mal_anime_url_base()}{self.num_limit}"
 
         if self.num_limit == 100:
             return

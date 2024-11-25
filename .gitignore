@@ -12,3 +12,4 @@ db.sqlite3
 .cache
 *.json
 !anime_data_template.json
+project_guide/
