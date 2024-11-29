@@ -34,6 +34,7 @@ class MalspiderSpider(scrapy.Spider):
         self.num_limit += 50
         next_page = f"{get_mal_anime_url_base()}{self.num_limit}"
 
+        # controller for testing
         if self.num_limit == 100:
             return
 

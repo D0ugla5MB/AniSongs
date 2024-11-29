@@ -8,6 +8,7 @@ SPOTIPY_CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
 SPOTIPY_CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
 SPOTIPY_REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
 #######################################################################
+SCRAPY_PROJECT_DIR_BASE = os.getenv('SCRAPY_DIR_BASE')
 SCRAPY_ID_NAME = os.getenv("SCRAPY_ID_NAME")
 SCRAPY_DOMAIN_NAME = os.getenv("SCRAPY_DOMAIN_NAME")
 SCRAPY_MALSPIDER_URL_SELECTOR = "table div > h3 > a"
@@ -21,22 +22,49 @@ MAL_URLs_BY_TYPE = {
     'ona': 'https://myanimelist.net/topanime.php?type=ona&limit=',
     'special': 'https://myanimelist.net/topanime.php?type=special&limit=',
     'all': 'https://myanimelist.net/topanime.php?limit=',
-    'upcoming': 'https://myanimelist.net/topanime.php?type=upcoming',
+    'upcoming': 'https://myanimelist.net/topanime.php?type=upcoming&limit=0',
 }
 #######################################################################
 TEMPLATE_JSON_PATH = os.getenv("TEMPLATE_FILE_PATH")
 
 #######################################################################__END__###
 
-def get_directory_path(dir_name):
+
+def check_and_parse_json(file_path):
+    import json
+
+    try:
+        with open(file_path, 'rb') as file:
+            first_byte = file.read(1)
+
+            if first_byte == b'{' or first_byte == b'[':
+                with open(file_path, 'r') as json_file:
+                    try:
+                        json_data = json.load(json_file)
+                        return json_data
+                    except json.JSONDecodeError as e:
+                        print(f"JSON parsing error: {e}")
+                        return None
+            else:
+                print("Error: The file is not a JSON file.")
+                return None
+    except Exception as e:
+        print(f"Error reading the file: {e}")
+        return None
+
+
+def select_directory_path(dir_name):
     
     return {
         'aux_files': settings.AUXILIAR_FILES_DIR,
         'json': settings.JSON_FILES_DIR,
-    }.get(dir_name, "Invalid directory name")
+    }.get(dir_name, settings.BASE_DIR)
 
-def get_mal_url(anime_type):
+def select_mal_url(anime_type):
     return MAL_URLs_BY_TYPE.get(anime_type, "Invalid type")
+
+def get_scrapy_location() -> str:
+    return SCRAPY_PROJECT_DIR_BASE
 
 def get_scrapy_anime_spider_id_name() -> str:
     return SCRAPY_ANIME_SPIDER_ID_NAME

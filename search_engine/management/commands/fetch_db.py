@@ -7,37 +7,6 @@ from anisong.utils.files_config import get_anime_url_list
 from search_engine.models import Song, Anime, Artist
 
 file = get_anime_url_list()
-def check_warning_RightData():
-        if not os.path.exists(file):
-            warnings.warn(
-                f"Required file '{file}' is missing. Please create or add this file before running the script.",
-                UserWarning
-            )
-        else:
-            if os.path.getsize(file) == 0:
-                warnings.warn(
-                    f"File '{file}' exists but is empty. Please ensure it has data.",
-                    UserWarning
-                )
-            else:
-                try:
-                    with open(file, newline='', encoding='utf-8') as csvfile:
-                        reader = csv.reader(csvfile)
-                        headers = next(reader, None)
-                        
-                        if headers is None:
-                            warnings.warn(
-                                f"File '{file}' exists but appears not to be in valid CSV format. Please check the file content.",
-                                UserWarning
-                            )
-                        else:
-                            print(f"File '{file}' is present, not empty, and in CSV format.")
-                except Exception as e:
-                    warnings.warn(
-                        f"File '{file}' could not be read as a CSV file. Error: {str(e)}",
-                        UserWarning
-                    )
-
 
 class Command(BaseCommand):
     help = 'Save data on song\'s database from a CSV file'
@@ -50,7 +19,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        check_warning_RightData()
         
         file_path = options['file_name']
 
