@@ -3,6 +3,7 @@ from anisong import settings
 
 MY_UTILS_DIR = os.getenv("MY_UTILS_DIR")
 UTILS_BASE_DIR = MY_UTILS_DIR if MY_UTILS_DIR else os.path.join(settings.BASE_DIR, "utils")
+JSON_FILES_DIR = os.getenv('JSON_FILES_DIR')
 #######################################################################
 SPOTIPY_CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
 SPOTIPY_CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
@@ -26,6 +27,9 @@ MAL_URLs_BY_TYPE = {
 }
 #######################################################################
 TEMPLATE_JSON_PATH = os.getenv("TEMPLATE_FILE_PATH")
+ANIMES_URL_LIST = os.getenv('ANIMES_URL_LIST_PATH')
+ANIME_OP_ED_PATH = os.getenv('ANIME_OP_ED_PATH')
+SONGS_DATA_PATH = os.getenv('SONGS_DATA_PATH')
 
 #######################################################################__END__###
 
@@ -82,13 +86,13 @@ def get_scrapy_domain_name() -> str:
     return SCRAPY_DOMAIN_NAME
 
 def get_anime_url_list() -> str:
-    return os.path.join(UTILS_BASE_DIR, 'animes_url_list.json')
+    return ANIMES_URL_LIST
 
 def get_anime_song_list() -> str:
-    return os.path.join(UTILS_BASE_DIR, 'anime_op_ed.json')
+    return ANIME_OP_ED_PATH
 
 def get_song_list_data() -> str:
-    return os.path.join(UTILS_BASE_DIR, 'songs_data.json')
+    return SONGS_DATA_PATH
 
 def get_spotify_client_secret() -> str:
     return SPOTIPY_CLIENT_SECRET

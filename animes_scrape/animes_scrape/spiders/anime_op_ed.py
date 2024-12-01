@@ -1,11 +1,11 @@
 import scrapy
 import json
 
-from anisong.utils.files_config import get_anime_song_list, get_scrapy_anime_spider_id_name
+from anisong.utils.files_config import get_anime_song_list, get_anime_url_list, get_scrapy_anime_spider_id_name
 
 class AnimeOpEdSpider(scrapy.Spider):
     name = get_scrapy_anime_spider_id_name()
-    input_file = get_anime_song_list()
+    input_file = get_anime_url_list()
 
     def start_requests(self):
         try:
@@ -18,10 +18,10 @@ class AnimeOpEdSpider(scrapy.Spider):
             return
 
         for anime in anime_data:
-            url = anime.get("url")
+            anime_url = anime.get("anime_url")
  
-            if url:
-                yield scrapy.Request(url=url, callback=self.parse_anime)
+            if anime_url:
+                yield scrapy.Request(url=anime_url, callback=self.parse_anime)
             else:
                 self.log(f"No URL found for anime: {anime}")
 

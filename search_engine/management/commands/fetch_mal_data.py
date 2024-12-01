@@ -11,17 +11,16 @@ class Command(BaseCommand):
     help = "Run the myanimelist Scrapy spider and save the output to a JSON file."
 
     def handle(self, *args, **kwargs):
-        
-        scrapy_project_path = os.path.join(os.getcwd(), get_scrapy_location())
-        sys.path.append(scrapy_project_path)
-        self.stdout.write("Starting Scrapy spider...")
+        file_path = get_anime_url_list()
 
-        feeds_key = get_anime_url_list()
         settings = get_project_settings()
         settings.update(
             {
                 "FEEDS": {  
-                    feeds_key: {"format": "json", "overwrite": True},
+                    file_path: {
+                        "format": "json", 
+                        "overwrite": True
+                    },
                 }
             }
         )
@@ -31,4 +30,4 @@ class Command(BaseCommand):
         process.crawl(MalspiderSpider)
         process.start()  
 
-        self.stdout.write(self.style.SUCCESS(f"Spider finished. Output saved {feeds_key}"))
+        self.stdout.write(self.style.SUCCESS(f"Spider finished. Output saved {file_path}"))
