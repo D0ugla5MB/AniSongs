@@ -56,6 +56,11 @@ def check_and_parse_json(file_path):
         print(f"Error reading the file: {e}")
         return None
 
+def select_json_template(template):
+    return{
+        'index': f'{MY_UTILS_DIR}/anime_index_template.json',
+        'data': f'{MY_UTILS_DIR}/anime_data_template.json',
+    }.get(template)
 
 def select_directory_path(dir_name):
     
