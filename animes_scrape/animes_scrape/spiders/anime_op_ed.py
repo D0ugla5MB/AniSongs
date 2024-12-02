@@ -29,12 +29,22 @@ class AnimeOpEdSpider(scrapy.Spider):
                 self.log(f"No URL found for anime: {anime}")
     
     def parse_anime(self, response):
+        anime_id = ""
+        #anime_info = {}
+        anime_title = ""
+        track_list = []
+        type_track_list = ""
+        track_name = ""
+        artist_name = ""
+        extra_info = ""
+        track_id = ""
+        spotify_artist_id = ""
+        spotify_track_id = ""
 
         href_match = re.search(r'/anime/(\d+)/', response.url)
         anime_id = href_match.group(1) if href_match else None
         anime_title = response.xpath("//h1/strong/text()").get()
 
-        track_list = []
         sections = response.xpath("//div[contains(@class, 'opnening') or contains(@class, 'ending')]")
         for section in sections:
             is_opening = "opnening" in section.get().lower()
@@ -65,8 +75,8 @@ class AnimeOpEdSpider(scrapy.Spider):
                     artist_name = artist_content.strip()
 
                     spotify_data = {
-                        "spotify_artist_id": "",  
-                        "spotify_track_id": "" 
+                        "spotify_artist_id": spotify_artist_id,  
+                        "spotify_track_id": spotify_track_id
                     }
                     
                     track_list.append({

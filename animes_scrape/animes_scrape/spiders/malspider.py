@@ -18,12 +18,10 @@ class MalspiderSpider(scrapy.Spider):
 
         for link in links:
             href = link.attrib.get("href")
-            anchor_text = link.xpath("text()").get()
-            path_number = (match.group(1) if (match := re.search(r'/anime/(\d+)/', href)) else None)
+            #anchor_text = link.xpath("text()").get()
+            #path_number = (match.group(1) if (match := re.search(r'/anime/(\d+)/', href)) else None)
             yield {
                 "anime_url": href,
-                "anime_title": anchor_text,
-                "anime_id" :path_number,
             }
 
         page_title = response.xpath("//title/text()").get()
