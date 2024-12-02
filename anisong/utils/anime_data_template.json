@@ -5,10 +5,14 @@
     "track_list": [
       {
         "type_track_list": "<opening|ending|insert>",
-        "track_name": "<string>",
-        "artist_name": "<string>",
+        "track_name": "<string>",  
+        "artist_name": "<string>", 
+        "extra_info": "<string>", 
         "track_id": "<integer or string>",
-        "artist_id": "<integer or string>"
+        "sptotify_data": {
+          "spotify_artist_id": "<integer or string>",
+          "spotify_track_id": "<integer or string>"
+        }
       }
     ]
   }

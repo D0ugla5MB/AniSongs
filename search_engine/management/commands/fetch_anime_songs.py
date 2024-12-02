@@ -17,9 +17,11 @@ class Command(BaseCommand):
             'FEEDS': {
                 file_path: {  
                     'format': 'json',  
-                    'overwrite': True  
+                    'overwrite': True,
+                    'indent': 2,  
                 },
             },
+            'FEED_EXPORT_INDENT': 2,
         })
 
         process = CrawlerProcess(settings)
