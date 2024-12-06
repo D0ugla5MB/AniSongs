@@ -1,20 +1,24 @@
 import json
 import re
-
 from utils.files_config import get_placeholders, get_regex_delimiters
-
-#left content: can contain number index (number song) AND/OR content_in_quotes (song name)
-# right content:  can contain artist name and info extra
 
 def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex_delimiters):
     has_num ,hasnot_num = placehold()
     spe_ch_delimit, by_delimit = [re.compile(pat) for pat in delimiters()]
     
     regax_ph = has_num if re.search(r'^\d+', input_str) else hasnot_num 
+    result_str = []
+    result_str = [regax_ph] * (regax_ph == has_num) #not skip the num part to avoid to compute the num.seq. afterwards
+    
+    for i in range(len(input_str)):
+        if spe_ch_delimit.search(input_str[i]) or by_delimit.search(input_str[i]):
+            result_str.append(regax_ph)
+        else:
+            result_str.append(input_str[i])
 
-
+    modified_str = ''.join(result_str)
         
-    pass
+    return modified_str
  
 def extract_substrings(input_string):
     regex_dict = {
