@@ -30,9 +30,16 @@ TEMPLATE_JSON_PATH = os.getenv("TEMPLATE_FILE_PATH")
 ANIMES_URL_LIST = os.getenv('ANIMES_URL_LIST_PATH')
 ANIME_OP_ED_PATH = os.getenv('ANIME_OP_ED_PATH')
 SONGS_DATA_PATH = os.getenv('SONGS_DATA_PATH')
-
+#######################################################################
+PLACEHOLDERS = {'has_num': '§', 'nothas_num': '¬'}
+SYMBOLS_FOR_REGEX = [r'[:\)\"\(\]\[]', r' by ']
 #######################################################################__END__###
 
+def get_regex_delimiters():
+    return SYMBOLS_FOR_REGEX
+
+def get_placeholders():
+    return PLACEHOLDERS
 
 def check_and_parse_json(file_path):
     import json

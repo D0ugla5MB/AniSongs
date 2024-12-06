@@ -1,5 +1,46 @@
 import json
+import re
 
+from utils.files_config import get_placeholders, get_regex_delimiters
+
+#left content: can contain number index (number song) AND/OR content_in_quotes (song name)
+# right content:  can contain artist name and info extra
+
+def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex_delimiters):
+    has_num ,hasnot_num = placehold()
+    spe_ch_delimit, by_delimit = [re.compile(pat) for pat in delimiters()]
+    
+    regax_ph = has_num if re.search(r'^\d+', input_str) else hasnot_num 
+
+
+        
+    pass
+ 
+def extract_substrings(input_string):
+    regex_dict = {
+        "by_splitter": re.compile(r"\sby\s"),
+        "jp_chars": re.compile(r'[\u3040-\uFF9F]+'),
+        "numColon_checker": re.compile(r'^\d+:'),
+        "semi_colon_splitter": re.compile(r":"),
+        "number_part": re.compile(r"^\d+"),
+        "content_in_quotes": re.compile(r'(?<=\")[^\"]*(?=\")'),
+        "eps": re.compile(r'\\(([^()]*\\beps\\b[^()]*)\\)'),
+        "content_in_square_brackets": re.compile(r'(?<=\[)[^\[\]]*(?=\])'),
+        "cont_splitter": re.compile(r'cont\.')
+    }
+    
+    ##better do it using something with tries
+    
+    if regex_dict["by_splitter"].search(input_string):
+        left_content, right_content = regex_dict["by_splitter"].split(input_string)
+        
+        if regex_dict["semi_colon_splitter"].search(left_content):
+            pass
+    elif regex_dict["cont_splitter"].search(input_string):
+        pass
+    
+    return ['']
+ 
 def extract_index_data(url_files):
     with open(url_files, 'r', encoding='utf-8') as f:
       url_files = json.load(f)

@@ -1,7 +1,8 @@
+import logging
 import scrapy
 import re
 import json
-
+from anisong.utils.format_data import (extract_substrings)
 from anisong.utils.files_config import (
     get_anime_url_list,
     get_scrapy_anime_spider_id_name,
@@ -30,7 +31,6 @@ class AnimeOpEdSpider(scrapy.Spider):
     
     def parse_anime(self, response):
         anime_id = ""
-        #anime_info = {}
         anime_title = ""
         track_list = []
         type_track_list = ""
@@ -38,8 +38,6 @@ class AnimeOpEdSpider(scrapy.Spider):
         artist_name = ""
         extra_info = ""
         track_id = ""
-        spotify_artist_id = ""
-        spotify_track_id = ""
 
         href_match = re.search(r'/anime/(\d+)/', response.url)
         anime_id = href_match.group(1) if href_match else None
@@ -52,42 +50,33 @@ class AnimeOpEdSpider(scrapy.Spider):
             td_elements = section.xpath(".//td[@width='84%']")
             for td in td_elements:
                 track_content = td.xpath("string(.)").get()
-                by_index = track_content.find(' by ')
+                self.log(f"[DEBUG] Raw track content: {track_content}", level=logging.DEBUG)
+                
+                if track_content:
+                    extracted_data = extract_substrings(track_content)
 
-                if by_index != -1:
-                    left_part = track_content[:by_index].strip()
+                    if extracted_data:
+                        self.log(f"\033[36m[DEBUG]\033[0m Raw track content: {track_content}", level=logging.DEBUG)
+                        track_id = extracted_data[0] if len(extracted_data) > 0 else ""
+                        track_name = extracted_data[1] if len(extracted_data) > 1 else ""
+                        artist_name = extracted_data[2] if len(extracted_data) > 2 else ""
+                        extra_info = " ".join(extracted_data[3:]) if len(extracted_data) > 3 else ""
+                    else:
+                        self.log(f"\033[31m[ERROR]\033[0m Invalid data extracted: {extracted_data}", level=logging.ERROR)
 
-                    colon_index = left_part.find(':')
-
-                    if colon_index != -1:
-                        track_id = left_part[:colon_index].strip()
-                        track_name = left_part[colon_index + 1:].strip()
-                        track_name = track_name.strip('"')
-
-                    artist_content = track_content[by_index + 4:].strip()
-
-                    extra_info = ""
-                    episode_info_match = re.search(r'\(eps [^)]*\)', artist_content)
-                    if episode_info_match:
-                        extra_info = episode_info_match.group(0).strip('()')  
-                        artist_content = artist_content.replace(episode_info_match.group(0), "").strip()
-
-                    artist_name = artist_content.strip()
-
-                    spotify_data = {
-                        "spotify_artist_id": spotify_artist_id,  
-                        "spotify_track_id": spotify_track_id
-                    }
-                    
+                    spotify_data = {"spotify_artist_id": "", "spotify_track_id": ""}
                     track_list.append({
                         "type_track_list": type_track_list,
-                        "track_name": track_name.strip() if track_name else "",  
-                        "artist_name": artist_name.strip() if artist_name else "",  
-                        "extra_info": extra_info.strip() if extra_info else "",  
-                        "track_id": track_id.strip() if track_id else "",  
+                        "track_name": track_name.strip(),
+                        "artist_name": artist_name.strip(),
+                        "extra_info": extra_info.strip(),
+                        "track_id": track_id.strip(),
                         "spotify_data": spotify_data,
                     })
-                        
+                else:
+                    self.log(f"\033[33m[WARNING]\033[0m Empty track content found", level=logging.WARNING)
+
+
         anime_data = {
             "anime_id": int(anime_id) if anime_id else "",
             "anime_info": {
@@ -95,5 +84,5 @@ class AnimeOpEdSpider(scrapy.Spider):
                 "track_list": track_list,
             }
         }
-
+        self.log(f"\033[32m[SUCCESS]\033[0m Parsed data for anime ID: {anime_id}")
         yield anime_data
