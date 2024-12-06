@@ -31,7 +31,7 @@ ANIMES_URL_LIST = os.getenv('ANIMES_URL_LIST_PATH')
 ANIME_OP_ED_PATH = os.getenv('ANIME_OP_ED_PATH')
 SONGS_DATA_PATH = os.getenv('SONGS_DATA_PATH')
 #######################################################################
-PLACEHOLDERS = {'has_num': '§', 'nothas_num': '¬'}
+PLACEHOLDERS = ['§', '¬']
 SYMBOLS_FOR_REGEX = [r'[:\)\"\(\]\[]', r' by ']
 #######################################################################__END__###
 

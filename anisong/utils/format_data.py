@@ -6,13 +6,13 @@ def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex
     has_num ,hasnot_num = placehold()
     spe_ch_delimit, by_delimit = [re.compile(pat) for pat in delimiters()]
     
-    regax_ph = has_num if re.search(r'^\d+', input_str) else hasnot_num 
+    regex_ph = has_num if re.search(r'^\d+', input_str) else hasnot_num 
     result_str = []
-    result_str = [regax_ph] * (regax_ph == has_num) #not skip the num part to avoid to compute the num.seq. afterwards
+    result_str = [regex_ph] * (regex_ph == has_num) #not skip the num part to avoid to compute the num.seq. afterwards
     
     for i in range(len(input_str)):
         if spe_ch_delimit.search(input_str[i]) or by_delimit.search(input_str[i]):
-            result_str.append(regax_ph)
+            result_str.append(regex_ph)
         else:
             result_str.append(input_str[i])
 
