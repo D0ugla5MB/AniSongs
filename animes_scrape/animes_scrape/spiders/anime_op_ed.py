@@ -1,9 +1,9 @@
-import logging
 import scrapy
 import re
 import json
 from anisong.utils.format_data import (extract_substrings, put_placeholders)
 from anisong.utils.files_config import (
+    pause_coderun,
     get_anime_url_list,
     get_scrapy_anime_spider_id_name,
     select_json_template,
@@ -47,7 +47,7 @@ class AnimeOpEdSpider(scrapy.Spider):
             tracklist_type = "opening" if is_opening else "ending"
             td_elements = section.xpath(".//td[@width='84%']")
             for td in td_elements:
-                track_content = td.xpath("string(.)").get()
+                track_content = td.xpath("string(.)").get().split()
 
                 if not track_content:
                     self.logger.error(f"Error at '\033[92m'track_content'\033[0m' extraction for anime: {anime_title}, song data is missing.")
@@ -55,7 +55,9 @@ class AnimeOpEdSpider(scrapy.Spider):
 
                 try:
                     prepared_data  = put_placeholders(track_content)
+                    pause_coderun()
                     extracted_data = extract_substrings(prepared_data)
+                    pause_coderun()
 
                     if not all(extracted_data):
                         self.logger.error(f"Error at extracted_data for anime: {anime_title}, '\033[92m'extracted data'\033[0m': {extracted_data} is invalid.")

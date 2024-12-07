@@ -1,4 +1,5 @@
 import os
+import pdb
 from anisong import settings
 
 MY_UTILS_DIR = os.getenv("MY_UTILS_DIR")
@@ -34,6 +35,9 @@ SONGS_DATA_PATH = os.getenv('SONGS_DATA_PATH')
 PLACEHOLDERS = ['§', '¬']
 SYMBOLS_FOR_REGEX = [r'[:\)\"\(\]\[]', r' by ']
 #######################################################################__END__###
+
+def pause_coderun():
+    pdb.set_trace()
 
 def get_regex_delimiters():
     return SYMBOLS_FOR_REGEX
