@@ -2,11 +2,21 @@ import json
 import re
 from utils.files_config import get_placeholders, get_regex_delimiters
 
+def save_delimiter():
+    v = None
+    def fr(p):
+        nonlocal v
+        v = p
+        return v
+    return fr
+
 def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex_delimiters):
     has_num ,hasnot_num = placehold()
     spe_ch_delimit, by_delimit = [re.compile(pat) for pat in delimiters()]
     
     regex_ph = has_num if re.search(r'^\d+', input_str) else hasnot_num 
+    delimiter = save_delimiter()
+    
     result_str = []
     result_str = [regex_ph] * (regex_ph == has_num) #not skip the num part to avoid to compute the num.seq. afterwards
     
@@ -17,33 +27,13 @@ def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex
             result_str.append(input_str[i])
 
     modified_str = ''.join(result_str)
-        
-    return modified_str
+    
+    return [modified_str, delimiter(regex_ph)]
  
-def extract_substrings(input_string):
-    regex_dict = {
-        "by_splitter": re.compile(r"\sby\s"),
-        "jp_chars": re.compile(r'[\u3040-\uFF9F]+'),
-        "numColon_checker": re.compile(r'^\d+:'),
-        "semi_colon_splitter": re.compile(r":"),
-        "number_part": re.compile(r"^\d+"),
-        "content_in_quotes": re.compile(r'(?<=\")[^\"]*(?=\")'),
-        "eps": re.compile(r'\\(([^()]*\\beps\\b[^()]*)\\)'),
-        "content_in_square_brackets": re.compile(r'(?<=\[)[^\[\]]*(?=\])'),
-        "cont_splitter": re.compile(r'cont\.')
-    }
+def extract_substrings(pre_data):
+    preformat_str, regex_delimiter = pre_data
     
-    ##better do it using something with tries
-    
-    if regex_dict["by_splitter"].search(input_string):
-        left_content, right_content = regex_dict["by_splitter"].split(input_string)
-        
-        if regex_dict["semi_colon_splitter"].search(left_content):
-            pass
-    elif regex_dict["cont_splitter"].search(input_string):
-        pass
-    
-    return ['']
+    return [preformat_str, regex_delimiter]
  
 def extract_index_data(url_files):
     with open(url_files, 'r', encoding='utf-8') as f:
