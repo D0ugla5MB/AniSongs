@@ -1,6 +1,6 @@
 import json
 import re
-from utils.files_config import get_placeholders, get_regex_delimiters
+from anisong.utils.files_config import get_placeholders, get_regex_delimiters
 
 def save_delimiter():
     v = None
@@ -31,9 +31,25 @@ def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex
     return [modified_str, delimiter(regex_ph)]
  
 def extract_substrings(pre_data):
-    preformat_str, regex_delimiter = pre_data
+    preformated_str, re_delimiter = pre_data
+    matched_substr = []
+    n = len(preformated_str)
+    i, j = 0, 0  
+
+    while i < n:
+
+        while i < n and preformated_str[i] != re_delimiter:
+            i += 1
+        j = i + 1
+        while j < n and preformated_str[j] != re_delimiter:
+            j += 1
+
+        if i < n and j < n and j - i > 1:
+            matched_substr.append(preformated_str[i + 1:j])  
+
+        i = j + 1
     
-    return [preformat_str, regex_delimiter]
+    return matched_substr
  
 def extract_index_data(url_files):
     with open(url_files, 'r', encoding='utf-8') as f:
