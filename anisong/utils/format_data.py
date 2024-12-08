@@ -1,6 +1,6 @@
 import json
 import re
-from anisong.utils.files_config import get_placeholders, get_regex_delimiters
+from anisong.utils.files_config import get_placeholders, get_regex_delimiters, pause_coderun
 
 def save_delimiter():
     v = None
@@ -10,24 +10,36 @@ def save_delimiter():
         return v
     return fr
 
+def verify_by_word(inp_str, by_delim, ph):
+    match = re.search(by_delim, inp_str)
+    
+    if match:
+        start, end = match.span()
+        new_str = inp_str[:start] + ph + inp_str[end:]
+        return new_str
+    
+    return inp_str
+
 def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex_delimiters):
+    delimiter = save_delimiter()
     has_num ,hasnot_num = placehold()
     spe_ch_delimit, by_delimit = [re.compile(pat) for pat in delimiters()]
     
     regex_ph = has_num if re.search(r'^\d+', input_str) else hasnot_num 
-    delimiter = save_delimiter()
+    aux_str = ''.join(verify_by_word(input_str, by_delimit, regex_ph))
     
     result_str = []
     result_str = [regex_ph] * (regex_ph == has_num) #not skip the num part to avoid to compute the num.seq. afterwards
     
-    for i in range(len(input_str)):
-        if spe_ch_delimit.search(input_str[i]) or by_delimit.search(input_str[i]):
+    for i in range(len(aux_str)):
+        if spe_ch_delimit.search(aux_str[i]):
             result_str.append(regex_ph)
         else:
-            result_str.append(input_str[i])
+            result_str.append(aux_str[i])
+    
 
     modified_str = ''.join(result_str)
-    
+    pause_coderun()    
     return [modified_str, delimiter(regex_ph)]
  
 def extract_substrings(pre_data):

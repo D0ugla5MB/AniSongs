@@ -33,7 +33,7 @@ ANIME_OP_ED_PATH = os.getenv('ANIME_OP_ED_PATH')
 SONGS_DATA_PATH = os.getenv('SONGS_DATA_PATH')
 #######################################################################
 PLACEHOLDERS = ['§', '¬']
-SYMBOLS_FOR_REGEX = [r'[:\)\"\(\]\[]', r' by ']
+SYMBOLS_FOR_REGEX = [r'[:\)\"\(\]\[]', r'by']
 #######################################################################__END__###
 
 def pause_coderun():
