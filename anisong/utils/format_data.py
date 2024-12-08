@@ -43,6 +43,7 @@ def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex
 
 def extract_substrings(pre_data):
     preformated_str, re_delimiter = pre_data
+    pause_coderun()
     
     if not preformated_str or not re_delimiter: return ['empty string']
         
@@ -58,6 +59,7 @@ def extract_substrings(pre_data):
     for i in range(len(matched_indexes) - 1):
         if matched_indexes[i + 1] - matched_indexes[i] > 1:
             pairs.append((matched_indexes[i], matched_indexes[i + 1]))
+            pause_coderun() #probably the issue is here
 
     if len(pairs) == 1:
         start, end = pairs[0]
@@ -73,7 +75,6 @@ def extract_substrings(pre_data):
     if pairs and pairs[-1][1] < len(preformated_str) - 1:
         last_end = pairs[-1][1]
         matched_substr.append(preformated_str[last_end + 1:])
-    pause_coderun()
     return matched_substr
  
 def extract_index_data(url_files):
