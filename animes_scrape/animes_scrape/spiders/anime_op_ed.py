@@ -57,7 +57,7 @@ class AnimeOpEdSpider(scrapy.Spider):
                 try:
                     prepared_data  = put_placeholders(track_content)
                     extracted_data = extract_substrings(prepared_data)
-
+                    pause_coderun()
                     if not all(extracted_data):
                         self.logger.error(f"Error at extracted_data for anime: {anime_title}, '\033[92m'extracted data'\033[0m': {extracted_data} is invalid.")
                         continue
@@ -69,6 +69,7 @@ class AnimeOpEdSpider(scrapy.Spider):
                         "extra_info": extracted_data[3] if extracted_data[3] not in [None, ''] else 'empty'
                     }
 
+                    pause_coderun()
                     if not track_data["track_id"]:
                         self.logger.error(f"Error at '\033[92m'track_data'\033[0m' construction for anime: {anime_title}, missing track_id in {track_data}.")
                         continue
@@ -89,7 +90,7 @@ class AnimeOpEdSpider(scrapy.Spider):
                         self.logger.error(f"Error appending to '\033[92med_list\033[0m' for anime: {anime_title}, track_data: {track_data}, error: {str(e)}")
 
         try:
-            self.logger.error(f"Error during '\033[92myield\033[0m' for anime: {anime_title}, openings: {len(op_list)}, endings: {len(ed_list)}")
+            pause_coderun()
             yield {
                 "anime_id": anime_id,
                 "anime_info": {

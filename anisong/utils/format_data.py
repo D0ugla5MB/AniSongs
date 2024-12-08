@@ -39,28 +39,41 @@ def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex
     
 
     modified_str = ''.join(result_str)
-    pause_coderun()    
     return [modified_str, delimiter(regex_ph)]
- 
+
 def extract_substrings(pre_data):
     preformated_str, re_delimiter = pre_data
-    matched_substr = []
-    n = len(preformated_str)
-    i, j = 0, 0  
-
-    while i < n:
-
-        while i < n and preformated_str[i] != re_delimiter:
-            i += 1
-        j = i + 1
-        while j < n and preformated_str[j] != re_delimiter:
-            j += 1
-
-        if i < n and j < n and j - i > 1:
-            matched_substr.append(preformated_str[i + 1:j])  
-
-        i = j + 1
     
+    if not preformated_str or not re_delimiter: return ['empty string']
+        
+    if len(preformated_str) == 1 and preformated_str != re_delimiter: return [preformated_str]
+    
+    pairs = []
+    matched_indexes = []
+
+    for index, char in enumerate(preformated_str):
+        if char == re_delimiter:
+            matched_indexes.append(index)
+
+    for i in range(len(matched_indexes) - 1):
+        if matched_indexes[i + 1] - matched_indexes[i] > 1:
+            pairs.append((matched_indexes[i], matched_indexes[i + 1]))
+
+    if len(pairs) == 1:
+        start, end = pairs[0]
+        return [preformated_str[start + 1:end]]
+
+    ###################################################___END SPECIAL CASES__##########
+
+    matched_substr = []
+    
+    for start, end in pairs:
+        matched_substr.append(preformated_str[start + 1:end])
+    
+    if pairs and pairs[-1][1] < len(preformated_str) - 1:
+        last_end = pairs[-1][1]
+        matched_substr.append(preformated_str[last_end + 1:])
+    pause_coderun()
     return matched_substr
  
 def extract_index_data(url_files):
