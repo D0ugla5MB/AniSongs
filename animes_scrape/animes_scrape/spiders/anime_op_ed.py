@@ -1,7 +1,7 @@
 import scrapy
 import re
 import json
-from anisong.utils.format_data import (extract_substrings, put_placeholders)
+from anisong.utils.format_data import (extract_substrings, parse_song_info, put_placeholders, trim_trailing_spaces)
 from anisong.utils.files_config import (
     pause_coderun,
     get_anime_url_list,
@@ -12,8 +12,6 @@ from anisong.utils.files_config import (
 class AnimeOpEdSpider(scrapy.Spider):
     name = get_scrapy_anime_spider_id_name()
     input_file = get_anime_url_list()
-    json_template = select_json_template('data')
-    
     
     def start_requests(self):
         try:
@@ -47,45 +45,41 @@ class AnimeOpEdSpider(scrapy.Spider):
             tracklist_type = "opening" if is_opening else "ending"
             td_elements = section.xpath(".//td[@width='84%']")
             for td in td_elements:
-                
-                track_content = ''.join(td.xpath("string(.)").get().split())
-                
+                new_str = trim_trailing_spaces(td.xpath("string(.)").get())
+                track_content = ''.join(new_str)
                 if not track_content:
                     self.logger.error(f"Error at '\033[92m'track_content'\033[0m' extraction for anime: {anime_title}, song data is missing.")
                     continue
 
                 try:
-                    prepared_data  = put_placeholders(track_content)
-                    extracted_data = extract_substrings(prepared_data)
-                    if not all(extracted_data):
-                        self.logger.error(f"Error at extracted_data for anime: {anime_title}, '\033[92m'extracted data'\033[0m': {extracted_data} is invalid.")
+                    parsed_data = parse_song_info(track_content)
+                    if not parsed_data or not parsed_data[0]:
+                        self.logger.error(f"Error at parsed_data for anime: {anime_title}, 'parsed data': {parsed_data} is invalid.")
                         continue
-
+                    parsed_item = parsed_data[0]
                     track_data = {
-                        "track_id": extracted_data[0] if extracted_data[0] not in [None, ''] else 'empty',
-                        "track_name": extracted_data[1] if extracted_data[1] not in [None, ''] else 'empty',
-                        "artist_name": extracted_data[2] if extracted_data[2] not in [None, ''] else 'empty',
-                        "extra_info": extracted_data[3] if extracted_data[3] not in [None, ''] else 'empty'
+                        "track_id": parsed_item.get("num", "empty"),
+                        "track_name": parsed_item.get("song_name", "empty"),
+                        "artist_name": parsed_item.get("artist_name", "empty"),
+                        "extra_info": parsed_item.get("extra_info", "empty"),
                     }
-
-                    if not track_data["track_id"]:
-                        self.logger.error(f"Error at '\033[92m'track_data'\033[0m' construction for anime: {anime_title}, missing track_id in {track_data}.")
-                        continue
+                    if tracklist_type == "opening":
+                        try:
+                            op_list.append(track_data)
+                        except Exception as e:
+                            self.logger.error(f"Error appending to 'op_list' for anime: {anime_title}, track_data: {track_data}, error: {str(e)}")
+                    else:
+                        try:
+                            ed_list.append(track_data)
+                        except Exception as e:
+                            self.logger.error(f"Error appending to 'ed_list' for anime: {anime_title}, track_data: {track_data}, error: {str(e)}")
 
                 except Exception as e:
                     self.logger.error(f"Error processing song data for anime: {anime_title}, song content: {track_content}, error: {str(e)}")
                     continue
 
-                if tracklist_type == "opening":
-                    try:
-                        op_list.append(track_data)
-                    except Exception as e:
-                        self.logger.error(f"Error appending to '\033[92mop_list\033[0m' for anime: {anime_title}, track_data: {track_data}, error: {str(e)}")
-                else:
-                    try:
-                        ed_list.append(track_data)
-                    except Exception as e:
-                        self.logger.error(f"Error appending to '\033[92med_list\033[0m' for anime: {anime_title}, track_data: {track_data}, error: {str(e)}")
+            
+
 
         try:
             yield {

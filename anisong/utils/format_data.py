@@ -2,6 +2,38 @@ import json
 import re
 from anisong.utils.files_config import get_placeholders, get_regex_delimiters, pause_coderun
 
+def parse_song_info(song_info):
+    """
+    Parses a song string and extracts details into a structured format.
+    """
+    pattern = r"""
+        (?:(\d+):\s*)?                          # Capture optional number followed by ": "
+        "(.*?)"                                 # Capture song name within double quotes
+        \s+by\s+(.+?)                           # Capture artist name after "by"
+        (?:\s*\((.*)\))?                       # Capture optional extra info in parentheses
+        (?:\s*\[(.*?)\])?$                      # Capture optional extra info in brackets
+    """
+    matches = re.finditer(pattern, song_info, re.VERBOSE)
+    results = []
+    for match in matches:
+        num = match.group(1)
+        song_name = match.group(2)
+        artist_name = match.group(3)
+        extra_info = match.group(4) or match.group(5)
+        results.append({
+            "num": int(num) if num else None,
+            "song_name": song_name,
+            "artist_name": artist_name,
+            "extra_info": extra_info.strip() if extra_info else None,
+        })
+    return results
+
+def trim_trailing_spaces(target_str):
+    i = len(target_str) - 1
+    while i >= 0 and target_str[i].isspace():
+        i -= 1
+    return target_str[:i + 1]
+
 def save_delimiter():
     v = None
     def fr(p):
@@ -43,7 +75,6 @@ def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex
 
 def extract_substrings(pre_data):
     preformated_str, re_delimiter = pre_data
-    pause_coderun()
     
     if not preformated_str or not re_delimiter: return ['empty string']
         
@@ -59,7 +90,6 @@ def extract_substrings(pre_data):
     for i in range(len(matched_indexes) - 1):
         if matched_indexes[i + 1] - matched_indexes[i] > 1:
             pairs.append((matched_indexes[i], matched_indexes[i + 1]))
-            pause_coderun() #probably the issue is here
 
     if len(pairs) == 1:
         start, end = pairs[0]
