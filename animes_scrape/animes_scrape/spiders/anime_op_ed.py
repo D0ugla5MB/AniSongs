@@ -3,15 +3,16 @@ import re
 import json
 from anisong.utils.format_data import (extract_substrings, parse_song_info, put_placeholders, trim_trailing_spaces)
 from anisong.utils.files_config import (
+    get_json_template,
     pause_coderun,
     get_anime_url_list,
     get_scrapy_anime_spider_id_name,
-    select_json_template,
 )
 
 class AnimeOpEdSpider(scrapy.Spider):
     name = get_scrapy_anime_spider_id_name()
     input_file = get_anime_url_list()
+    json_template_pros = get_json_template()
     
     def start_requests(self):
         try:
@@ -29,6 +30,8 @@ class AnimeOpEdSpider(scrapy.Spider):
                 self.log(f"No URL found for anime: {anime}")
     
     def scrape_anime_song_data(self, response):
+        
+        
         anime_id = ""
         anime_title = ""
         op_list = []
@@ -40,6 +43,7 @@ class AnimeOpEdSpider(scrapy.Spider):
         anime_title = response.xpath("//h1/strong/text()").get()
 
         sections = response.xpath("//div[contains(@class, 'opnening') or contains(@class, 'ending')]")
+        pause_coderun()
         for section in sections:
             is_opening = "opnening" in section.get().lower()
             tracklist_type = "opening" if is_opening else "ending"
@@ -77,10 +81,6 @@ class AnimeOpEdSpider(scrapy.Spider):
                 except Exception as e:
                     self.logger.error(f"Error processing song data for anime: {anime_title}, song content: {track_content}, error: {str(e)}")
                     continue
-
-            
-
-
         try:
             yield {
                 "anime_id": anime_id,

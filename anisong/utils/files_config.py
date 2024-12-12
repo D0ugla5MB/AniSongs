@@ -1,5 +1,6 @@
 import os
 import pdb
+import re
 from anisong import settings
 
 MY_UTILS_DIR = os.getenv("MY_UTILS_DIR")
@@ -15,6 +16,13 @@ SCRAPY_ID_NAME = os.getenv("SCRAPY_ID_NAME")
 SCRAPY_DOMAIN_NAME = os.getenv("SCRAPY_DOMAIN_NAME")
 SCRAPY_MALSPIDER_URL_SELECTOR = "table div > h3 > a"
 SCRAPY_ANIME_SPIDER_ID_NAME = 'anime_op_ed'
+SCRAPPY_CSS_SELECTORS = [
+    {"anime_title_xpath": "//h1/strong/text()"},
+    {"opening_class": "opnening"},
+    {"ending_class": "ending"},
+    {"sections_xpath": "//div[contains(@class, 'opnening') or contains(@class, 'ending')]"},
+    {"td_elements_xpath": ".//td[@width='84%']"}
+]
 #######################################################################
 MAL_ANIME_URL_BASE = 'https://myanimelist.net/topanime.php?type=tv&limit='
 MAL_URLs_BY_TYPE = {
@@ -32,6 +40,15 @@ ANIMES_URL_LIST = os.getenv('ANIMES_URL_LIST_PATH')
 ANIME_OP_ED_PATH = os.getenv('ANIME_OP_ED_PATH')
 SONGS_DATA_PATH = os.getenv('SONGS_DATA_PATH')
 #######################################################################
+REGEX_PATTERNS = {
+    'mal_id_url': re.compile(r'/anime/(\d+)/'),
+    'num_match': re.compile(r'(?:(\d+):\s*)?'),
+    'song_name': re.compile(r'"(.*?)"'),
+    'artist_name': re.compile(r'\s+by\s+(.+?)'),
+    'extra_info_par': re.compile(r'(?:\s*\((.*)\))?'),
+    'extra_info_bracket': re.compile(r'(?:\s*\[(.*?)\])?$'),
+    'by_breaker': re.compile(r' by '),   
+}
 PLACEHOLDERS = ['§', '¬']
 SYMBOLS_FOR_REGEX = [r'[:\)\"\(\]\[]', r'by']
 #######################################################################__END__###
@@ -39,39 +56,38 @@ SYMBOLS_FOR_REGEX = [r'[:\)\"\(\]\[]', r'by']
 def pause_coderun():
     pdb.set_trace()
 
+def get_css_selectors(): return SCRAPPY_CSS_SELECTORS
+
 def get_regex_delimiters():
     return SYMBOLS_FOR_REGEX
 
 def get_placeholders():
     return PLACEHOLDERS
 
-def check_and_parse_json(file_path):
-    import json
+def get_json_template():
+    template_json = {
+        "anime":{
+            "anime_myanimelist_id":"",
+            "anime_roman_title": "",
+            "anime_jp_title": "",
+            "anime_broadcast_type": "",
+        },
+        "song":{
+            "song_roman_name": "",
+            "song_jp_name": "",
+            "song_type": "",
+        },
+        "artist":{
+            "artist_jp_name": "",
+            "artist_roman_name": "",
+        },
+        "spotify":{
+            "song_id":"",
+            "artist_id":"",
+        }
+    }
+    return template_json
 
-    try:
-        with open(file_path, 'rb') as file:
-            first_byte = file.read(1)
-
-            if first_byte == b'{' or first_byte == b'[':
-                with open(file_path, 'r') as json_file:
-                    try:
-                        json_data = json.load(json_file)
-                        return json_data
-                    except json.JSONDecodeError as e:
-                        print(f"JSON parsing error: {e}")
-                        return None
-            else:
-                print("Error: The file is not a JSON file.")
-                return None
-    except Exception as e:
-        print(f"Error reading the file: {e}")
-        return None
-
-def select_json_template(template):
-    return{
-        'index': f'{MY_UTILS_DIR}/anime_index_template.json',
-        'data': f'{MY_UTILS_DIR}/anime_data_template.json',
-    }.get(template)
 
 def select_directory_path(dir_name):
     

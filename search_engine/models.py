@@ -32,13 +32,12 @@ class Song(models.Model):
         ('E', 'Ending'),
         ('I', 'Insert'),
     ]
-    REL_NAME_STR = 'songs'
 
-    song_id_spotify = models.CharField(primary_key=True, max_length=50, unique=True, verbose_name="Song's Spotify ID", default='QWER')
+    spotify_song_id = models.CharField(primary_key=True, max_length=50, unique=True, verbose_name="Song's Spotify ID", default='QWER')
     song_name_roman = models.CharField(max_length=100, db_index=True, verbose_name="Romanized Song Name",null=True, blank=True)
     song_name_jp = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name="Japanese Song Name")
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name=REL_NAME_STR, verbose_name="Artist", null=True)
-    anime = models.ForeignKey(Anime, on_delete=models.CASCADE, related_name=REL_NAME_STR, verbose_name="Related Anime", null=True)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='songs', verbose_name="Artist", null=True)
+    anime = models.ForeignKey(Anime, on_delete=models.CASCADE, related_name='songs', verbose_name="Related Anime", null=True)
     song_type = models.CharField(max_length=10, choices=SONG_TYPES, db_index=True, verbose_name="Song Type",null=True)
     song_cover = models.ImageField(upload_to='api_data_img', verbose_name='spotify_song_cover', null=True, blank=True)
 
