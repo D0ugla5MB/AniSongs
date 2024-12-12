@@ -21,13 +21,21 @@ class AnimeOpEdSpider(scrapy.Spider):
         except FileNotFoundError:
             self.log(f"Input file '{self.input_file}' not found.")
             return
+        except json.JSONDecodeError:
+            self.log(f"Error decoding JSON in the input file '{self.input_file}'.")
+            return
 
+        if not anime_data:  
+            self.log(f"Input file '{self.input_file}' is empty.")
+            return
+        
         for anime in anime_data:
             anime_url = anime.get("anime_url")
             if anime_url:
+                self.log(f"Processing URL: {anime_url}")
                 yield scrapy.Request(url=anime_url, callback=self.scrape_anime_song_data)
             else:
-                self.log(f"No URL found for anime: {anime}")
+                self.log(f"No URL found for anime entry: {anime}")
     
     def scrape_anime_song_data(self, response):
         
