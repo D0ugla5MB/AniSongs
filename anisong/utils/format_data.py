@@ -1,6 +1,6 @@
 import json
 import re
-from anisong.utils.files_config import get_placeholders, get_regex_delimiters, pause_coderun
+from anisong.utils.files_config import get_placeholders, get_regex_patterns, pause_coderun
 
 def parse_song_info(song_info):
     """
@@ -52,7 +52,7 @@ def verify_by_word(inp_str, by_delim, ph):
     
     return inp_str
 
-def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex_delimiters):
+def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex_patterns):
     delimiter = save_delimiter()
     has_num ,hasnot_num = placehold()
     spe_ch_delimit, by_delimit = [re.compile(pat) for pat in delimiters()]
