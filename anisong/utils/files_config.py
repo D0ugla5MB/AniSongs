@@ -31,16 +31,16 @@ JSON_TEMPLATE = {
             "anime_myanimelist_id":"",
             "anime_roman_title": "",
             "anime_jp_title": "",
-            "anime_broadcast_type": "",
         },
         "song":{
-            "song_roman_name": "",
-            "song_jp_name": "",
-            "song_type": "",
+            "num": "",
+            "roman_name": "",
+            "jp_name": "",
+            "type": "",
         },
         "artist":{
-            "artist_jp_name": "",
-            "artist_roman_name": "",
+            "roman_name": "",
+            "jp_name": "",
         },
         "spotify":{
             "song_id":"",
@@ -66,13 +66,13 @@ SONGS_DATA_PATH = os.getenv('SONGS_DATA_PATH')
 #######################################################################
 REGEX_PATTERNS = {
     'mal_id_url': re.compile(r'/anime/(\d+)/'),
-    'num_match': re.compile(r'(?:(\d+):\s*)?'),
+    'num': re.compile(r'(?:(\d+):\s*)?'),
     'song_name': re.compile(r'"(.*?)"'),
     'artist_name': re.compile(r'\s+by\s+(.+?)'),
     'extra_info_par': re.compile(r'(?:\s*\((.*)\))?'),
     'extra_info_bracket': re.compile(r'(?:\s*\[(.*?)\])?$'),
-    'by_breaker': re.compile(r' by '),   
-    'japanese_text': re.compile(r'[\u3000-\u9FFF]+')
+    'by_breaker': re.compile(r'\sby\s'),   
+    'jp_txt': re.compile(r'[\u3000-\u9FFF]+')
 }
 PLACEHOLDERS = ['§', '¬']
 SYMBOLS_FOR_REGEX = [r'[:\)\"\(\]\[]', r'by']
