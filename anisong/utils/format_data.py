@@ -7,7 +7,8 @@ def parse_song_info(reg_pat, track_data):
     
     if not artist_part: return track_data
     
-    num = reg_pat['num'].search(song_part)[0] if song_part and reg_pat['num'].search(song_part) else '1'
+    num = reg_pat['num'].search(song_part)[0] if len(reg_pat['num'].search(song_part).group()) > 0 else '1'
+    pause_coderun()
     jp_name = reg_pat['jp_txt'].search(song_part)[0] if song_part and reg_pat['jp_txt'].search(song_part) else 'empty'
     roman_name = reg_pat['song_name'].search(song_part)[0] if song_part and not jp_name else {
         re.split(r'\s\(',song_part)[0]
