@@ -1,21 +1,33 @@
 import json
 import re
 from anisong.utils.files_config import get_placeholders, get_regex_patterns, pause_coderun
-
+    
 def parse_song_info(reg_pat, track_data):
-    song_part, artist_part = reg_pat['by_breaker'].split(track_data) if reg_pat['by_breaker'].search(track_data) else track_data
+    song_part, artist_part = reg_pat['by_breaker'].split(track_data) if reg_pat['by_breaker'].search(track_data) else [track_data, None]
     
+    if not artist_part: return track_data
+    
+    num = reg_pat['num'].search(song_part)[0] if song_part and reg_pat['num'].search(song_part) else '1'
+    jp_name = reg_pat['jp_txt'].search(song_part)[0] if song_part and reg_pat['jp_txt'].search(song_part) else 'empty'
+    roman_name = reg_pat['song_name'].search(song_part)[0] if song_part and not jp_name else {
+        re.split(r'\s\(',song_part)[0]
+    }
+
     song_data = {
-        'num': reg_pat['num'].search(song_part)[0] if song_part and reg_pat['num'].search(song_part) else 'empty',
-        'roman_name': reg_pat['song_name'].search(song_part)[0] if song_part and reg_pat['song_name'].search(song_part) else 'empty',
-        'jp_name': reg_pat['jp_txt'].search(song_part)[0] if song_part and reg_pat['jp_txt'].search(song_part) else 'empty',
+        'num': num,
+        'roman_name': roman_name,
+        'jp_name': jp_name,
     }
-    
+
+    aux_artist =  re.split(r'[\)\\(\]\[]',artist_part, maxsplit=1) if re.search(r'[\)\\(\]\[]', artist_part) else 'empty'
+    artist_roman_name = aux_artist[0] if artist_part and not aux_artist == 'empty' else artist_part
+    artist_jp_name = reg_pat['jp_txt'].search(artist_part)[0] if artist_part and reg_pat['jp_txt'].search(artist_part) else 'empty'
+
     artist_data = {
-        'roman_name': reg_pat['artist_name'].search(artist_part)[0] if artist_part and reg_pat['artist_name'].search(artist_part) else 'empty',
-        'jp_name': reg_pat['jp_txt'].search(artist_part)[0] if artist_part and reg_pat['jp_txt'].search(artist_part) else 'empty',
-    }
-    pause_coderun()    
+        'roman_name': artist_roman_name,
+        'jp_name': artist_jp_name,
+}
+    #pause_coderun()    
     return {
         'song': song_data,
         'artist': artist_data
