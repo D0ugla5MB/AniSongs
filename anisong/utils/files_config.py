@@ -72,7 +72,9 @@ REGEX_PATTERNS = {
     'extra_info_par': re.compile(r'(?:\s*\((.*)\))?'),
     'extra_info_bracket': re.compile(r'(?:\s*\[(.*?)\])?$'),
     'by_breaker': re.compile(r'\sby\s'),   
-    'jp_txt': re.compile(r'[\u3000-\u9FFF]+')
+    'jp_txt': re.compile(r'[\u3000-\u9FFF]+'),
+    'swap': re.compile(r'[\)\"\(\]\[]'),
+    'placeholder': re.compile(r'§')
 }
 PLACEHOLDERS = ['§', '¬']
 SYMBOLS_FOR_REGEX = [r'[:\)\"\(\]\[]', r'by']

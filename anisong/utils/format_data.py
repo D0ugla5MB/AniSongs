@@ -2,33 +2,27 @@ import json
 import re
 from anisong.utils.files_config import get_placeholders, get_regex_patterns, pause_coderun
     
+def put_placeholders(str, reg, placeholder):
+    new_str = reg['by_breaker'].sub(placeholder, str) if len(reg['by_breaker'].search(str)[0]) > 0 else str
+    new_str = reg['swap'].sub(placeholder, new_str)
+    pause_coderun()    
+    result = [substring for substring in reg['placeholder'].split(new_str) if substring]
+    return result
+    
 def parse_song_info(reg_pat, track_data):
-    song_part, artist_part = reg_pat['by_breaker'].split(track_data) if reg_pat['by_breaker'].search(track_data) else [track_data, None]
-    
-    if not artist_part: return track_data
-    
-    num = reg_pat['num'].search(song_part)[0] if len(reg_pat['num'].search(song_part).group()) > 0 else '1'
-    pause_coderun()
-    jp_name = reg_pat['jp_txt'].search(song_part)[0] if song_part and reg_pat['jp_txt'].search(song_part) else 'empty'
-    roman_name = reg_pat['song_name'].search(song_part)[0] if song_part and not jp_name else {
-        re.split(r'\s\(',song_part)[0]
-    }
+
+    pause_coderun()    
 
     song_data = {
-        'num': num,
-        'roman_name': roman_name,
-        'jp_name': jp_name,
+        'num': track_data[0] if re.search(r'^\d+', track_data[0])[0] else '1',
+        'roman_name': track_data[1],
+        'jp_name': track_data[2],
     }
 
-    aux_artist =  re.split(r'[\)\\(\]\[]',artist_part, maxsplit=1) if re.search(r'[\)\\(\]\[]', artist_part) else 'empty'
-    artist_roman_name = aux_artist[0] if artist_part and not aux_artist == 'empty' else artist_part
-    artist_jp_name = reg_pat['jp_txt'].search(artist_part)[0] if artist_part and reg_pat['jp_txt'].search(artist_part) else 'empty'
-
     artist_data = {
-        'roman_name': artist_roman_name,
-        'jp_name': artist_jp_name,
+        'roman_name': track_data[3],
+        'jp_name': track_data[4],
 }
-    #pause_coderun()    
     return {
         'song': song_data,
         'artist': artist_data
@@ -40,78 +34,6 @@ def trim_trailing_spaces(target_str) -> str:
         i -= 1
     return target_str[:i + 1]
 
-def save_delimiter():
-    v = None
-    def fr(p):
-        nonlocal v
-        v = p
-        return v
-    return fr
-
-def verify_by_word(inp_str, by_delim, ph):
-    match = re.search(by_delim, inp_str)
-    
-    if match:
-        start, end = match.span()
-        new_str = inp_str[:start] + ph + inp_str[end:]
-        return new_str
-    
-    return inp_str
-
-def put_placeholders(input_str, placehold=get_placeholders, delimiters=get_regex_patterns):
-    delimiter = save_delimiter()
-    has_num ,hasnot_num = placehold()
-    spe_ch_delimit, by_delimit = [re.compile(pat) for pat in delimiters()]
-    
-    regex_ph = has_num if re.search(r'^\d+', input_str) else hasnot_num 
-    aux_str = ''.join(verify_by_word(input_str, by_delimit, regex_ph))
-    
-    result_str = []
-    result_str = [regex_ph] * (regex_ph == has_num) #not skip the num part to avoid to compute the num.seq. afterwards
-    
-    for i in range(len(aux_str)):
-        if spe_ch_delimit.search(aux_str[i]):
-            result_str.append(regex_ph)
-        else:
-            result_str.append(aux_str[i])
-    
-
-    modified_str = ''.join(result_str)
-    return [modified_str, delimiter(regex_ph)]
-
-def extract_substrings(pre_data):
-    preformated_str, re_delimiter = pre_data
-    
-    if not preformated_str or not re_delimiter: return ['empty string']
-        
-    if len(preformated_str) == 1 and preformated_str != re_delimiter: return [preformated_str]
-    
-    pairs = []
-    matched_indexes = []
-
-    for index, char in enumerate(preformated_str):
-        if char == re_delimiter:
-            matched_indexes.append(index)
-
-    for i in range(len(matched_indexes) - 1):
-        if matched_indexes[i + 1] - matched_indexes[i] > 1:
-            pairs.append((matched_indexes[i], matched_indexes[i + 1]))
-
-    if len(pairs) == 1:
-        start, end = pairs[0]
-        return [preformated_str[start + 1:end]]
-
-    ###################################################___END SPECIAL CASES__##########
-
-    matched_substr = []
-    
-    for start, end in pairs:
-        matched_substr.append(preformated_str[start + 1:end])
-    
-    if pairs and pairs[-1][1] < len(preformated_str) - 1:
-        last_end = pairs[-1][1]
-        matched_substr.append(preformated_str[last_end + 1:])
-    return matched_substr
  
 def extract_index_data(url_files):
     with open(url_files, 'r', encoding='utf-8') as f:

@@ -1,10 +1,11 @@
 from copy import deepcopy
 import scrapy
 import json
-from anisong.utils.format_data import (parse_song_info, trim_trailing_spaces)
+from anisong.utils.format_data import (parse_song_info, put_placeholders, trim_trailing_spaces)
 from anisong.utils.files_config import (
     get_css_selectors,
     get_json_template,
+    get_placeholders,
     get_regex_patterns,
     pause_coderun,
     get_anime_url_list,
@@ -63,8 +64,8 @@ class AnimeOpEdSpider(scrapy.Spider):
             is_opening = css_selectos.get('op') in section.get().lower()
             song['type'] = "opening" if is_opening else "ending"
             for td in td_elements:
-                #new_str = trim_trailing_spaces(td.xpath("string(.)").get())
                 track_content = trim_trailing_spaces(td.xpath("string(.)").get())
+                track_content = put_placeholders(track_content, get_regex_patterns(), get_placeholders().pop(0))
                 track_content = parse_song_info(regex_patterns, track_content)
                 if not track_content:
                     self.logger.error(f"Error at '\033[92m'track_content'\033[0m' extraction for anime: {anime['anime_roman_title']}, song data is missing.")
